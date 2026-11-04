@@ -1,0 +1,46 @@
+# Local tooling
+.tools/
+.venv/
+**/.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Node
+node_modules/
+**/node_modules/
+dist/
+.vite/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Databases / runtime data
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+data/
+backend/data/
+
+# Test / agent artifacts
+test-results/
+playwright-report/
+*.log
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local ACL recovery reports (outside workspace normally)
+*-acl-recovery/

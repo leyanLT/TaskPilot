@@ -1,0 +1,1059 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>今日摊位 · TaskPilot</title>
+  <style>
+    :root {
+      --cream: #f6f0e3;
+      --paper: #fffaf0;
+      --ink: #11110f;
+      --blue: #2946f5;
+      --blue-deep: #1d34c7;
+      --orange: #ff6a3d;
+      --lime: #dcef6e;
+      --pink: #ffc6d5;
+      --muted: #6f6b62;
+      --hand: "KaiTi", "STKaiti", "Kaiti SC", "FangSong", serif;
+      --ui: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
+      --display: "Arial Black", "Microsoft YaHei", "Arial", sans-serif;
+      --note: "Segoe Print", "Bradley Hand ITC", var(--hand);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-width: 1440px;
+      min-height: 900px;
+      background: #d8d1c2;
+      color: var(--ink);
+      font-family: var(--ui);
+    }
+
+    body { display: flex; justify-content: center; }
+
+    button, input { font: inherit; color: inherit; }
+    button { border: 0; background: none; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    .app {
+      display: flex;
+      width: 1440px;
+      height: 900px;
+      overflow: hidden;
+      background: var(--cream);
+    }
+
+    .rail {
+      position: relative;
+      display: flex;
+      width: 78px;
+      flex: 0 0 78px;
+      flex-direction: column;
+      align-items: center;
+      padding: 22px 0 20px;
+      background: var(--blue);
+      color: var(--cream);
+      border-right: 2px solid var(--ink);
+    }
+
+    .rail::after {
+      content: "";
+      position: absolute;
+      right: 10px;
+      bottom: 128px;
+      width: 36px;
+      height: 70px;
+      border: 1.3px solid rgba(246,240,227,.45);
+      border-radius: 50%;
+      transform: rotate(25deg);
+    }
+
+    .rail-logo {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border: 1.6px solid var(--cream);
+      border-radius: 13px 15px 11px 16px;
+      transform: rotate(-7deg);
+    }
+
+    .rail-logo svg { width: 25px; height: 25px; }
+
+    .rail-word {
+      margin-top: 30px;
+      font-family: var(--display);
+      font-size: 13px;
+      letter-spacing: .24em;
+      writing-mode: vertical-rl;
+      text-transform: uppercase;
+    }
+
+    .rail-dot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: auto;
+      font-family: var(--note);
+      font-size: 9px;
+      letter-spacing: .04em;
+      writing-mode: vertical-rl;
+      opacity: .84;
+    }
+
+    .rail-dot::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--lime);
+    }
+
+    .rail-index {
+      margin-top: 26px;
+      font-family: var(--display);
+      font-size: 18px;
+      letter-spacing: -.06em;
+    }
+
+    .rail-index small {
+      display: block;
+      margin-top: 1px;
+      font-family: var(--note);
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: .04em;
+      text-align: center;
+    }
+
+    .stage {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      flex: 1;
+      flex-direction: column;
+      gap: 12px;
+      height: 900px;
+      padding: 20px 28px 15px;
+      overflow: hidden;
+    }
+
+    .stage::before {
+      content: "TODAY";
+      position: absolute;
+      top: 158px;
+      right: 34px;
+      color: transparent;
+      font-family: var(--display);
+      font-size: 135px;
+      letter-spacing: -.08em;
+      line-height: 1;
+      -webkit-text-stroke: 1px rgba(17,17,15,.075);
+      pointer-events: none;
+    }
+
+    .topline {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 26px;
+      min-height: 38px;
+    }
+
+    .crumbs {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .crumbs .date {
+      padding: 5px 9px;
+      border: 1.5px solid var(--ink);
+      border-radius: 8px 4px 9px 4px;
+      background: var(--paper);
+      font-family: var(--note);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: .03em;
+      transform: rotate(-1.5deg);
+    }
+
+    .crumbs .slash { color: var(--orange); }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      margin-left: auto;
+      color: #625f56;
+      font-size: 12px;
+    }
+
+    .main-nav a { padding: 8px 0; }
+    .main-nav a.active {
+      color: var(--ink);
+      font-weight: 800;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .new-task {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 17px;
+      border: 2px solid var(--ink);
+      border-radius: 5px 8px 4px 7px;
+      background: var(--orange);
+      box-shadow: 4px 4px 0 var(--ink);
+      color: var(--ink);
+      font-family: var(--hand);
+      font-size: 15px;
+      font-weight: 700;
+      transform: rotate(.7deg);
+    }
+
+    .new-task b {
+      font-family: var(--ui);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      gap: 24px;
+      align-items: center;
+      min-height: 163px;
+      padding: 4px 4px 4px 3px;
+    }
+
+    .hero-copy { min-width: 0; }
+
+    .kicker {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 9px;
+      color: var(--blue);
+      font-family: var(--note);
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .kicker::before {
+      content: "";
+      width: 25px;
+      height: 2px;
+      background: var(--blue);
+      transform: rotate(-4deg);
+    }
+
+    .hero h1 {
+      max-width: 820px;
+      margin: 0;
+      font-family: var(--display);
+      font-size: 57px;
+      font-weight: 900;
+      letter-spacing: -.065em;
+      line-height: 1.08;
+    }
+
+    .hero h1 .highlight {
+      position: relative;
+      display: inline-block;
+      z-index: 0;
+      color: var(--blue);
+    }
+
+    .hero h1 .highlight::after {
+      content: "";
+      position: absolute;
+      right: -8px;
+      bottom: 3px;
+      left: -5px;
+      height: 12px;
+      background: var(--lime);
+      transform: rotate(-1.2deg);
+      z-index: -1;
+    }
+
+    .hero-sub {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0 0;
+      color: #57534a;
+      font-family: var(--hand);
+      font-size: 17px;
+    }
+
+    .hero-sub em {
+      display: inline-block;
+      padding: 2px 8px 3px;
+      border: 1px solid var(--ink);
+      border-radius: 8px 4px 9px 3px;
+      background: var(--paper);
+      font-family: var(--note);
+      font-size: 10px;
+      font-style: normal;
+      transform: rotate(2deg);
+    }
+
+    .score {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      min-height: 154px;
+      padding: 0 96px 3px 0;
+    }
+
+    .score-copy {
+      position: relative;
+      width: 252px;
+      padding-top: 27px;
+    }
+
+    .score-main {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      color: var(--blue);
+      line-height: .8;
+    }
+
+    .score-main strong {
+      font-family: var(--display);
+      font-size: 114px;
+      font-weight: 900;
+      letter-spacing: -.11em;
+    }
+
+    .score-main span {
+      max-width: 66px;
+      padding-bottom: 8px;
+      color: var(--ink);
+      font-family: var(--hand);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .score-side {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 13px;
+      padding: 7px 0 0 7px;
+    }
+
+    .score-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      font-family: var(--note);
+      font-size: 9px;
+    }
+
+    .score-chip::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border: 1.4px solid var(--ink);
+      border-radius: 50%;
+      background: var(--orange);
+    }
+
+    .score-chip.done::before { background: var(--lime); }
+    .score-chip.overdue::before { background: var(--pink); }
+
+    .sticker {
+      position: absolute;
+      top: -2px;
+      left: 8px;
+      padding: 6px 13px;
+      border: 1.5px solid var(--ink);
+      border-radius: 3px;
+      background: var(--pink);
+      font-family: var(--note);
+      font-size: 10px;
+      transform: rotate(-4deg);
+      white-space: nowrap;
+    }
+
+    .worker {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 94px;
+      height: 91px;
+      color: var(--ink);
+      transform: rotate(3deg);
+    }
+
+    .board {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.68fr) minmax(326px, .72fr);
+      gap: 17px;
+      min-height: 0;
+      flex: 1;
+    }
+
+    .tasks-zone {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 35px;
+    }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter {
+      padding: 6px 11px 7px;
+      border: 1.5px solid var(--ink);
+      border-radius: 4px 8px 5px 7px;
+      background: var(--paper);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+
+    .filter.active {
+      background: var(--ink);
+      color: var(--cream);
+      transform: rotate(-1deg);
+    }
+
+    .filter .count {
+      margin-left: 4px;
+      font-family: var(--note);
+      font-size: 9px;
+      font-weight: 400;
+      opacity: .72;
+    }
+
+    .sortline {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #625d51;
+      font-family: var(--hand);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .sortline::after {
+      content: "↘";
+      font-family: var(--ui);
+      font-size: 15px;
+      transform: rotate(8deg);
+    }
+
+    .task-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 14px;
+      min-height: 0;
+      flex: 1;
+    }
+
+    .task-card {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      padding: 16px 17px 13px;
+      border: 2px solid var(--ink);
+      border-radius: 9px 3px 11px 4px;
+      background: var(--paper);
+      box-shadow: 4px 4px 0 rgba(17,17,15,.9);
+    }
+
+    .task-card:nth-child(2) {
+      transform: translateY(4px) rotate(.45deg);
+      border-radius: 3px 10px 5px 8px;
+    }
+
+    .task-card:nth-child(3) {
+      transform: rotate(-.45deg);
+      border-radius: 8px 4px 3px 11px;
+    }
+
+    .task-card:nth-child(4) {
+      background: var(--pink);
+      transform: translateY(2px) rotate(.2deg);
+    }
+
+    .task-card.coral { background: var(--orange); }
+    .task-card.butter { background: var(--paper); }
+    .task-card.lime { background: var(--lime); }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card-index {
+      font-family: var(--display);
+      font-size: 11px;
+      letter-spacing: .04em;
+    }
+
+    .card-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 7px;
+      border: 1.3px solid var(--ink);
+      border-radius: 8px 4px 8px 3px;
+      background: var(--paper);
+      font-family: var(--note);
+      font-size: 9px;
+      line-height: 1.2;
+      transform: rotate(1.5deg);
+    }
+
+    .card-tag.warn { background: var(--ink); color: var(--cream); }
+    .card-tag.done { background: var(--lime); }
+
+    .task-card h3 {
+      max-width: 94%;
+      margin: 15px 0 5px;
+      font-family: var(--display);
+      font-size: 23px;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      line-height: 1.25;
+    }
+
+    .task-card p {
+      max-width: 92%;
+      margin: 0;
+      color: rgba(17,17,15,.7);
+      font-family: var(--hand);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .task-card.coral p { color: rgba(17,17,15,.76); }
+
+    .card-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 17px;
+    }
+
+    .due-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-family: var(--note);
+      font-size: 9px;
+      line-height: 1.3;
+    }
+
+    .due-label strong {
+      font-family: var(--ui);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .round-check {
+      display: grid;
+      width: 33px;
+      height: 31px;
+      flex: 0 0 33px;
+      place-items: center;
+      border: 1.6px solid var(--ink);
+      border-radius: 50% 46% 53% 48%;
+      background: transparent;
+      transform: rotate(-5deg);
+    }
+
+    .round-check svg {
+      width: 20px;
+      height: 20px;
+      opacity: 0;
+    }
+
+    .task-card.completed .round-check {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .task-card.completed .round-check svg { opacity: 1; }
+
+    .task-card.completed h3 {
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+      text-decoration-color: rgba(17,17,15,.62);
+    }
+
+    .done-stamp {
+      position: absolute;
+      right: 12px;
+      bottom: 39px;
+      padding: 2px 6px;
+      border: 2px solid var(--ink);
+      color: var(--ink);
+      font-family: var(--display);
+      font-size: 11px;
+      letter-spacing: .08em;
+      transform: rotate(-13deg);
+      opacity: .78;
+    }
+
+    .card-doodle {
+      position: absolute;
+      top: 32px;
+      right: 11px;
+      width: 43px;
+      height: 43px;
+      color: var(--ink);
+      opacity: .72;
+      transform: rotate(13deg);
+    }
+
+    .ai-card {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      padding: 18px 16px 13px;
+      border: 2px solid var(--ink);
+      border-radius: 4px 13px 9px 5px;
+      background: var(--blue);
+      color: var(--cream);
+      box-shadow: 5px 5px 0 var(--ink);
+      overflow: hidden;
+    }
+
+    .ai-card::before {
+      content: "";
+      position: absolute;
+      right: -35px;
+      top: 50px;
+      width: 130px;
+      height: 130px;
+      border: 1.5px solid rgba(246,240,227,.25);
+      border-radius: 50%;
+      transform: rotate(20deg);
+      pointer-events: none;
+    }
+
+    .ai-head {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 13px;
+      border-bottom: 1.4px solid rgba(246,240,227,.45);
+    }
+
+    .ai-kicker {
+      margin: 0 0 4px;
+      color: var(--lime);
+      font-family: var(--note);
+      font-size: 9px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .ai-head h2 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 25px;
+      letter-spacing: -.05em;
+      line-height: 1.05;
+    }
+
+    .ai-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 7px;
+      border: 1px solid var(--cream);
+      border-radius: 12px;
+      color: var(--cream);
+      font-family: var(--note);
+      font-size: 8px;
+      white-space: nowrap;
+      transform: rotate(2deg);
+    }
+
+    .ai-status::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--lime);
+    }
+
+    .ai-chat {
+      position: relative;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 10px;
+      padding: 17px 0 10px;
+    }
+
+    .ai-bubble {
+      max-width: 94%;
+      padding: 10px 11px;
+      border: 1.3px solid var(--ink);
+      border-radius: 9px 9px 3px 9px;
+      background: var(--cream);
+      color: #24231e;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .ai-bubble.user {
+      align-self: flex-end;
+      border-color: var(--cream);
+      background: var(--orange);
+      color: var(--ink);
+      border-radius: 9px 9px 9px 3px;
+      font-weight: 600;
+    }
+
+    .ai-bubble strong { color: var(--blue-deep); }
+
+    .ai-pending {
+      padding: 11px;
+      border: 1.4px dashed var(--cream);
+      border-radius: 8px 4px 8px 5px;
+      background: rgba(246,240,227,.1);
+    }
+
+    .ai-pending-label {
+      margin: 0 0 6px;
+      color: var(--lime);
+      font-family: var(--note);
+      font-size: 8px;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .ai-pending p {
+      margin: 0 0 9px;
+      font-family: var(--hand);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .ai-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .ai-action {
+      padding: 5px 10px;
+      border: 1.2px solid var(--cream);
+      border-radius: 4px 7px 4px 6px;
+      color: var(--cream);
+      font-family: var(--hand);
+      font-size: 11px;
+    }
+
+    .ai-action.primary {
+      border-color: var(--ink);
+      background: var(--lime);
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .ai-input {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      height: 40px;
+      padding: 0 7px 0 12px;
+      border: 1.4px solid var(--cream);
+      border-radius: 7px 4px 8px 5px;
+      background: rgba(246,240,227,.08);
+    }
+
+    .ai-input input {
+      min-width: 0;
+      flex: 1;
+      border: 0;
+      outline: 0;
+      background: none;
+      color: var(--cream);
+      font-family: var(--note);
+      font-size: 10px;
+    }
+
+    .ai-input input::placeholder { color: rgba(246,240,227,.66); opacity: 1; }
+
+    .ai-send {
+      display: grid;
+      width: 26px;
+      height: 26px;
+      place-items: center;
+      border: 1.2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--orange);
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 700;
+      transform: rotate(-8deg);
+    }
+
+    .ai-note {
+      margin: 8px 0 0;
+      color: rgba(246,240,227,.67);
+      font-family: var(--note);
+      font-size: 8px;
+      text-align: right;
+    }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 19px;
+      color: #6e685d;
+      font-family: var(--note);
+      font-size: 9px;
+      letter-spacing: .04em;
+    }
+
+    .footer .center {
+      color: var(--ink);
+      font-family: var(--hand);
+      font-size: 12px;
+      transform: rotate(-.6deg);
+    }
+
+    .footer .dot {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      margin: 0 7px;
+      border-radius: 50%;
+      background: var(--orange);
+      vertical-align: 1px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .new-task:hover { transform: translate(-1px, -1px) rotate(.7deg); box-shadow: 5px 5px 0 var(--ink); }
+      .task-card:hover { transform: translateY(-2px) rotate(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="rail" aria-label="TaskPilot 侧边栏">
+      <div class="rail-logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M18.4 2.7 7.8 17.2h7.4l-1.6 12.1L25 13.2h-7.1l.5-10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="rail-word">TaskPilot</div>
+      <div class="rail-dot">OPEN / ONLINE</div>
+      <div class="rail-index">01<small>NOV.03</small></div>
+    </aside>
+
+    <main class="stage">
+      <header class="topline">
+        <div class="crumbs">
+          <span class="date">NOV 03 / TUE</span>
+          <span>工作台</span>
+          <span class="slash">／</span>
+          <span>今天</span>
+        </div>
+        <nav class="main-nav" aria-label="主导航">
+          <a class="active" href="#">任务</a>
+          <a href="#">日历</a>
+          <a href="#">回顾</a>
+        </nav>
+        <button class="new-task" type="button"><b>＋</b> 新建任务</button>
+      </header>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="kicker">TODAY'S STAND / 今日小摊</p>
+          <h1>今天，先做<br><span class="highlight">最想逃的那件。</span></h1>
+          <p class="hero-sub">别把一天排满，先把一件做成。 <em>慢慢来，也算数</em></p>
+        </div>
+
+        <div class="score" aria-label="任务统计">
+          <div class="score-copy">
+            <span class="sticker">先做最难的！</span>
+            <div class="score-main">
+              <strong>03</strong>
+              <span>件<br>还亮着</span>
+            </div>
+            <div class="score-side">
+              <span class="score-chip done">01 完成</span>
+              <span class="score-chip overdue">01 逾期</span>
+              <span class="score-chip">01 无截止</span>
+            </div>
+          </div>
+          <svg class="worker" viewBox="0 0 150 130" fill="none" aria-hidden="true">
+            <g stroke="currentColor" stroke-width="3" stroke-linecap="butt" stroke-linejoin="miter">
+              <path d="M59 38c-5-8 2-17 11-16 4-8 16-8 20-2 9-1 14 7 10 14 7 4 4 13-2 15-2 7-10 10-16 8-7 5-16 1-17-6-7-1-10-7-6-13"/>
+              <path d="M63 55c-3 10-4 18-4 26m31-26c2 8 4 16 5 26"/>
+              <path d="M54 68 34 80m64-12 21-5"/>
+              <path d="M59 81c-4 9-6 16-11 22m36-22c5 7 9 12 15 18"/>
+              <path d="M35 76l-7 4m23-12-5 5"/>
+              <path d="M102 68c9-9 18-13 28-15m-15 5 3 5m-10-1 3 4"/>
+            </g>
+            <path d="M24 39c-4 2-8 4-10 8m16-13 2 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="m117 33 1-8m4 7 6-5m-10 0 1-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </section>
+
+      <section class="board">
+        <div class="tasks-zone">
+          <div class="list-toolbar">
+            <div class="filters" aria-label="任务筛选">
+              <button class="filter active" type="button">全部 <span class="count">04</span></button>
+              <button class="filter" type="button">待办 <span class="count">03</span></button>
+              <button class="filter" type="button">完成 <span class="count">01</span></button>
+            </div>
+            <div class="sortline">按截止时间排</div>
+          </div>
+
+          <div class="task-grid">
+            <article class="task-card coral">
+              <div class="card-top">
+                <span class="card-index">01 / TASK</span>
+                <span class="card-tag warn">最急</span>
+              </div>
+              <h3>完成实验报告</h3>
+              <p>把结果和图补完，发给周老师。</p>
+              <svg class="card-doodle" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+                <path d="M7 9c9-4 16 2 19 10 2 7 9 11 12 6 3-4-1-9-7-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="m11 5-4 8 8-2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+              <div class="card-bottom">
+                <span class="due-label">DUE TODAY<strong>今天 15:00 · 已逾期</strong></span>
+                <span class="round-check" role="img" aria-label="未完成"></span>
+              </div>
+            </article>
+
+            <article class="task-card butter">
+              <div class="card-top">
+                <span class="card-index">02 / TASK</span>
+                <span class="card-tag">顺一下</span>
+              </div>
+              <h3>梳理项目周报</h3>
+              <p>把本周进度和卡点列出来，明早再说。</p>
+              <div class="card-bottom">
+                <span class="due-label">DUE TOMORROW<strong>明天 18:00</strong></span>
+                <span class="round-check" role="img" aria-label="未完成"></span>
+              </div>
+            </article>
+
+            <article class="task-card lime">
+              <div class="card-top">
+                <span class="card-index">03 / TASK</span>
+                <span class="card-tag">小件事</span>
+              </div>
+              <h3>给牙医打个电话</h3>
+              <p>问一下下周还有没有空位。</p>
+              <div class="card-bottom">
+                <span class="due-label">NO DEADLINE<strong>有空再说</strong></span>
+                <span class="round-check" role="img" aria-label="未完成"></span>
+              </div>
+            </article>
+
+            <article class="task-card completed">
+              <div class="card-top">
+                <span class="card-index">04 / TASK</span>
+                <span class="card-tag done">已完成</span>
+              </div>
+              <h3>买一盒乌龙茶</h3>
+              <p>回家路上顺手带一盒。</p>
+              <div class="done-stamp">DONE!</div>
+              <div class="card-bottom">
+                <span class="due-label">DONE YESTERDAY<strong>已经做好啦</strong></span>
+                <span class="round-check" role="img" aria-label="已完成">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="m4 13 5 5L20 5" stroke="currentColor" stroke-width="2.8" stroke-linecap="square" stroke-linejoin="miter"/>
+                  </svg>
+                </span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <aside class="ai-card" aria-label="AI 助手">
+          <header class="ai-head">
+            <div>
+              <p class="ai-kicker">YOUR TINY OPERATOR</p>
+              <h2>小帮手</h2>
+            </div>
+            <span class="ai-status">在线</span>
+          </header>
+
+          <div class="ai-chat">
+            <div class="ai-bubble user">实验报告我已经交了。还有哪些没做？</div>
+            <div class="ai-bubble">还有 <strong>3 件</strong>没完成：整理项目周报、给牙医打电话，还有刚说交掉的实验报告。</div>
+            <div class="ai-bubble">要不要先把「完成实验报告」划掉？</div>
+            <div class="ai-pending">
+              <p class="ai-pending-label">WAITING FOR YOUR NOD</p>
+              <p>把「完成实验报告」标记为已完成</p>
+              <div class="ai-actions">
+                <button class="ai-action primary" type="button">划掉它</button>
+                <button class="ai-action" type="button">再等等</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-input">
+            <input type="text" placeholder="问我今天该先做哪件…" aria-label="和 AI 助手说话" />
+            <button class="ai-send" type="button" aria-label="发送消息">↗</button>
+          </div>
+          <p class="ai-note">写操作需要你点头 · 不替你擅自划掉</p>
+        </aside>
+      </section>
+
+      <footer class="footer">
+        <span>TASKPILOT <span class="dot"></span> PERSONAL WORKSTATION</span>
+        <span class="center">今天也要做一个，算一个。</span>
+        <span>11.03.26 / 03 THINGS LEFT</span>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

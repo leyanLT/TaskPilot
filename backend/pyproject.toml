@@ -1,0 +1,43 @@
+[project]
+name = "taskpilot-backend"
+version = "2.0.0"
+description = "TaskPilot V2.0 backend API: dependencies, recurrence, focus, calendar, replanning, risks, reports, LangGraph assistant"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.20.1",
+    "fastapi>=0.115",
+    "httpx>=0.28",
+    "langchain-openai>=0.3",
+    "langgraph>=0.6",
+    "pydantic>=2.10",
+    "pydantic-settings>=2.7",
+    "python-docx>=1.2.0",
+    "reportlab>=5.1.0",
+    "sqlalchemy>=2.0",
+    "tzdata>=2025.2",
+    "uvicorn[standard]>=0.34",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "ruff>=0.9",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+src = ["app", "tests"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B"]
+ignore = ["B008"]
+
+[tool.ruff.format]
+quote-style = "double"

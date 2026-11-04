@@ -1,0 +1,496 @@
+/* -------------------------------------------------------------------------- */
+/* Focus dial — 圆形倒计时与专注激励                                            */
+/* -------------------------------------------------------------------------- */
+
+.focus-dial {
+  position: relative;
+  display: grid;
+  width: 268px;
+  height: 268px;
+  margin: 6px auto 4px;
+  place-items: center;
+}
+
+.focus-dial-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.focus-dial-sketch {
+  fill: none;
+  stroke: rgba(24, 24, 19, 0.26);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 6;
+}
+
+.focus-dial-track {
+  fill: none;
+  stroke: rgba(24, 24, 19, 0.1);
+  stroke-width: 10;
+}
+
+.focus-dial-progress {
+  fill: none;
+  stroke: var(--dial, var(--leaf));
+  stroke-width: 10;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset 0.9s linear, stroke 0.4s ease;
+}
+
+.focus-dial-ticks line {
+  stroke: rgba(24, 24, 19, 0.22);
+  stroke-width: 1;
+}
+
+.focus-dial-ticks line.is-major {
+  stroke: rgba(24, 24, 19, 0.5);
+  stroke-width: 1.6;
+}
+
+.focus-dial.tone-leaf {
+  --dial: var(--leaf);
+}
+
+.focus-dial.tone-amber {
+  --dial: #b36b1c;
+}
+
+.focus-dial.tone-rust {
+  --dial: var(--rust);
+}
+
+.focus-dial-halo {
+  position: absolute;
+  inset: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(44, 107, 80, 0.12), transparent 68%);
+}
+
+.focus-dial.is-running .focus-dial-halo {
+  animation: dial-breathe 4.4s ease-in-out infinite;
+}
+
+.focus-dial.is-paused .focus-dial-progress {
+  opacity: 0.55;
+}
+
+.focus-dial.is-reached .focus-dial-time {
+  color: var(--rust);
+}
+
+.focus-dial-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.focus-dial-caption {
+  color: var(--faint);
+  font-family: var(--note-font);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+}
+
+.focus-dial-time {
+  font-family: var(--note-font);
+  font-size: 50px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.focus-dial-foot {
+  color: var(--faint);
+  font-size: 10px;
+}
+
+.focus-motivation {
+  margin: 0;
+  padding: 2px 4px 0;
+  color: var(--soft);
+  font-family: var(--hand);
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.focus-confetti {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.focus-confetti i {
+  position: absolute;
+  width: 7px;
+  height: 10px;
+  border: 1px solid rgba(24, 24, 19, 0.22);
+  background: var(--lime);
+  opacity: 0;
+  transform-origin: 0 0;
+  animation: confetti-fly 1.5s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+  animation-delay: calc(var(--i) * 26ms);
+}
+
+.focus-confetti i:nth-child(3n) {
+  background: var(--orange);
+}
+
+.focus-confetti i:nth-child(4n) {
+  background: #e6dcaa;
+}
+
+.focus-finished {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 2px 4px;
+  padding: 10px 12px;
+  border: 1.5px dashed var(--leaf);
+  border-radius: 4px;
+  background: rgba(220, 239, 114, 0.16);
+}
+
+.focus-finished strong {
+  font-family: var(--hand);
+  font-size: 16px;
+}
+
+.focus-finished small {
+  display: block;
+  color: var(--faint);
+  font-family: var(--note-font);
+  font-size: 10px;
+}
+
+.focus-finished-stamp {
+  flex: none;
+  padding: 3px 8px;
+  border: 1.5px solid var(--leaf);
+  border-radius: 3px;
+  color: var(--leaf);
+  font-family: var(--hand);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transform: rotate(-8deg);
+  animation: stamp-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.focus-bar-fill {
+  transform-origin: bottom;
+  animation: bar-rise 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.focus-bar:nth-child(2) .focus-bar-fill {
+  animation-delay: 0.04s;
+}
+
+.focus-bar:nth-child(3) .focus-bar-fill {
+  animation-delay: 0.08s;
+}
+
+.focus-bar:nth-child(4) .focus-bar-fill {
+  animation-delay: 0.12s;
+}
+
+.focus-bar:nth-child(5) .focus-bar-fill {
+  animation-delay: 0.16s;
+}
+
+.focus-bar:nth-child(6) .focus-bar-fill {
+  animation-delay: 0.2s;
+}
+
+.focus-bar:nth-child(7) .focus-bar-fill {
+  animation-delay: 0.24s;
+}
+
+@keyframes dial-breathe {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes confetti-fly {
+  0% {
+    opacity: 1;
+    transform: rotate(calc(var(--i) * 22.5deg)) translate(70px, 0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--i) * 22.5deg)) translate(140px, 120px) rotate(220deg);
+  }
+}
+
+@keyframes stamp-in {
+  from {
+    opacity: 0;
+    transform: scale(1.7) rotate(-18deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(-8deg);
+  }
+}
+
+@keyframes bar-rise {
+  from {
+    transform: scaleY(0.02);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@media (max-width: 560px) {
+  .focus-dial {
+    width: 232px;
+    height: 232px;
+  }
+
+  .focus-dial-time {
+    font-size: 42px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .focus-dial-halo,
+  .focus-dial-progress,
+  .focus-confetti,
+  .focus-finished-stamp,
+  .focus-bar-fill {
+    animation: none;
+    transition: none;
+  }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Floating focus timer — 跨页面悬浮倒计时                                       */
+/* -------------------------------------------------------------------------- */
+
+.focus-float {
+  position: fixed;
+  right: 24px;
+  bottom: 22px;
+  z-index: 40;
+  display: flex;
+  max-width: min(430px, calc(100vw - 28px));
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px 12px 6px 10px;
+  background: var(--note);
+  box-shadow: 5px 6px 0 rgba(24, 24, 19, 0.12);
+  transform: rotate(-0.8deg);
+  animation: focus-float-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.focus-float::before {
+  position: absolute;
+  top: -9px;
+  left: 22px;
+  width: 58px;
+  height: 18px;
+  border-right: 1px dashed rgba(24, 24, 19, 0.16);
+  border-left: 1px dashed rgba(24, 24, 19, 0.16);
+  background: rgba(220, 239, 114, 0.75);
+  content: "";
+  transform: rotate(-2deg);
+}
+
+.focus-float-main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  gap: 9px;
+  align-items: center;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.focus-float-ring {
+  position: relative;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex: none;
+  place-items: center;
+}
+
+.focus-float-ring svg {
+  width: 46px;
+  height: 46px;
+  transform: rotate(-90deg);
+}
+
+.focus-float-track {
+  fill: none;
+  stroke: rgba(24, 24, 19, 0.14);
+  stroke-width: 4;
+}
+
+.focus-float-progress {
+  fill: none;
+  stroke: var(--leaf);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.9s linear, stroke 0.3s ease;
+}
+
+.focus-float-ring em {
+  position: absolute;
+  color: var(--leaf);
+  font-size: 9px;
+  font-style: normal;
+}
+
+.focus-float.is-paused .focus-float-progress {
+  opacity: 0.7;
+  stroke: #b36b1c;
+}
+
+.focus-float.is-paused .focus-float-ring em {
+  color: #b36b1c;
+}
+
+.focus-float.is-reached {
+  background: #f6e6b8;
+  animation: focus-float-pulse 1.8s ease-in-out infinite;
+}
+
+.focus-float.is-reached .focus-float-progress,
+.focus-float.is-reached .focus-float-ring em {
+  stroke: var(--rust);
+  color: var(--rust);
+}
+
+.focus-float-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.focus-float-copy strong {
+  font-family: var(--note-font);
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.focus-float-copy span {
+  overflow: hidden;
+  max-width: 190px;
+  font-family: var(--hand);
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.focus-float-copy small {
+  color: var(--faint);
+  font-size: 9.5px;
+}
+
+.focus-float-actions {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.focus-float-button {
+  padding: 3px 8px;
+  border: 1px solid var(--ink);
+  border-radius: 8px 3px 7px 4px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--hand);
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.focus-float-button:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--lime);
+}
+
+.focus-float-button.is-danger:hover:not(:disabled) {
+  background: var(--rust);
+  border-color: var(--rust);
+  color: #fff8ec;
+}
+
+.focus-float-button:disabled {
+  opacity: 0.5;
+}
+
+@keyframes focus-float-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) rotate(-3deg) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(-0.8deg) scale(1);
+  }
+}
+
+@keyframes focus-float-pulse {
+  0%,
+  100% {
+    box-shadow: 5px 6px 0 rgba(24, 24, 19, 0.12);
+  }
+  50% {
+    box-shadow: 5px 6px 0 rgba(163, 63, 34, 0.32);
+  }
+}
+
+@media (max-width: 560px) {
+  .focus-float {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    max-width: none;
+    transform: none;
+    animation: none;
+  }
+
+  .focus-float-copy span {
+    max-width: 130px;
+  }
+
+  .focus-float-actions {
+    flex-direction: row;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .focus-float,
+  .focus-float.is-reached {
+    animation: none;
+  }
+}

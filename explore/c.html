@@ -1,0 +1,1104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>夜茶手账 · TaskPilot</title>
+  <style>
+    :root {
+      --ink: #141815;
+      --ink-soft: #1b211b;
+      --night: #101411;
+      --paper: #f1e8d6;
+      --paper-deep: #e6dbc4;
+      --text: #25251f;
+      --muted: #797466;
+      --faint: #a39b8a;
+      --amber: #d79a4a;
+      --amber-deep: #b87929;
+      --rust: #ad4632;
+      --sage: #657661;
+      --hand: "KaiTi", "STKaiti", "Kaiti SC", "FangSong", serif;
+      --serif: "Songti SC", "STSong", "SimSun", "Georgia", serif;
+      --ui: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
+      --note: "Bradley Hand ITC", "Segoe Print", var(--hand);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-width: 1440px;
+      min-height: 900px;
+      background: #070a08;
+      color: var(--paper);
+      font-family: var(--ui);
+    }
+
+    body { display: flex; justify-content: center; }
+
+    button, input { font: inherit; color: inherit; }
+    button { border: 0; background: none; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    .viewport {
+      display: grid;
+      grid-template-columns: 82px 1014px 344px;
+      width: 1440px;
+      height: 900px;
+      overflow: hidden;
+      background: var(--night);
+    }
+
+    .spine {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-right: 1px solid rgba(241,232,214,.13);
+      padding: 24px 0 21px;
+      background: #0c100d;
+    }
+
+    .spine-logo {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid rgba(241,232,214,.66);
+      border-radius: 50% 45% 53% 47%;
+      color: var(--paper);
+      transform: rotate(-8deg);
+    }
+
+    .spine-logo svg { width: 22px; height: 22px; }
+
+    .spine-word {
+      margin-top: 32px;
+      color: var(--paper);
+      font-family: var(--serif);
+      font-size: 13px;
+      letter-spacing: .24em;
+      writing-mode: vertical-rl;
+      text-transform: uppercase;
+    }
+
+    .spine-sub {
+      margin-top: 15px;
+      color: #717b70;
+      font-family: var(--note);
+      font-size: 8px;
+      letter-spacing: .15em;
+      writing-mode: vertical-rl;
+    }
+
+    .spine-line {
+      width: 1px;
+      height: 68px;
+      margin-top: auto;
+      background: linear-gradient(to bottom, transparent, rgba(241,232,214,.35), transparent);
+    }
+
+    .spine-date {
+      margin-top: 20px;
+      color: var(--faint);
+      font-family: var(--note);
+      font-size: 8px;
+      letter-spacing: .08em;
+      line-height: 1.85;
+      text-align: center;
+      writing-mode: vertical-rl;
+    }
+
+    .spine-mark {
+      margin-top: 18px;
+      color: var(--rust);
+      font-family: var(--serif);
+      font-size: 18px;
+      border: 1px solid var(--rust);
+      padding: 2px;
+      transform: rotate(-6deg);
+    }
+
+    .room {
+      position: relative;
+      overflow: hidden;
+      padding: 24px 22px 24px 32px;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(241,232,214,.06), transparent 22%),
+        radial-gradient(circle at 100% 100%, rgba(215,154,74,.07), transparent 24%),
+        #171d17;
+    }
+
+    .room::before {
+      content: "";
+      position: absolute;
+      top: 73px;
+      right: -188px;
+      width: 480px;
+      height: 480px;
+      border: 1px solid rgba(241,232,214,.09);
+      border-radius: 46% 54% 51% 49%;
+      transform: rotate(22deg);
+      pointer-events: none;
+    }
+
+    .room::after {
+      content: "3";
+      position: absolute;
+      right: 43px;
+      bottom: -48px;
+      color: transparent;
+      font-family: var(--serif);
+      font-size: 420px;
+      line-height: 1;
+      -webkit-text-stroke: 1px rgba(241,232,214,.055);
+      pointer-events: none;
+    }
+
+    .ledger {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      padding: 21px 28px 17px;
+      overflow: hidden;
+      color: var(--text);
+      background:
+        linear-gradient(90deg, rgba(173,70,50,.09) 0, rgba(173,70,50,.09) 1px, transparent 1px) 102px 0 / 100% 100%,
+        linear-gradient(to bottom, transparent 0, transparent 31px, rgba(37,37,31,.042) 31px, rgba(37,37,31,.042) 32px) 0 0 / 100% 32px,
+        var(--paper);
+      box-shadow: 18px 18px 0 rgba(0,0,0,.17);
+      transform: rotate(-.08deg);
+    }
+
+    .ledger::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(37,37,31,.11);
+      pointer-events: none;
+    }
+
+    .ledger::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 38px;
+      height: 38px;
+      background: var(--paper-deep);
+      border-left: 1px solid rgba(37,37,31,.17);
+      border-top: 1px solid rgba(37,37,31,.17);
+      clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+
+    .ledger-top {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 30px;
+      padding: 0 2px 12px;
+      border-bottom: 1px solid rgba(37,37,31,.28);
+    }
+
+    .paper-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-family: var(--serif);
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+    }
+
+    .paper-brand span {
+      color: var(--muted);
+      font-family: var(--hand);
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: .07em;
+    }
+
+    .ledger-meta {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: var(--muted);
+      font-family: var(--note);
+      font-size: 9px;
+      letter-spacing: .08em;
+    }
+
+    .ledger-meta b {
+      color: var(--text);
+      font-family: var(--serif);
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: .03em;
+    }
+
+    .write-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 11px;
+      border: 1px solid rgba(37,37,31,.65);
+      background: transparent;
+      font-family: var(--hand);
+      font-size: 13px;
+      transform: rotate(.8deg);
+    }
+
+    .write-button b {
+      font-family: var(--ui);
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    .ledger-body {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 118px minmax(0, 1fr);
+      gap: 23px;
+      min-height: 0;
+      flex: 1;
+      padding-top: 16px;
+    }
+
+    .margin-column {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      border-right: 1px solid rgba(37,37,31,.15);
+      padding-right: 16px;
+    }
+
+    .issue {
+      color: var(--rust);
+      font-family: var(--note);
+      font-size: 9px;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .vertical-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      margin: 14px 0 0;
+      font-family: var(--serif);
+      font-size: 48px;
+      font-weight: 500;
+      letter-spacing: .03em;
+      line-height: 1.1;
+    }
+
+    .vertical-title span:nth-child(2) { transform: translateX(4px) rotate(1deg); }
+    .vertical-title span:nth-child(3) { transform: translateX(-2px) rotate(-1.2deg); }
+    .vertical-title span:nth-child(4) { transform: translateX(3px); }
+    .vertical-title span:nth-child(5) { transform: translateX(-3px) rotate(.8deg); }
+
+    .title-line {
+      width: 1px;
+      height: 47px;
+      margin: 16px 0 13px 3px;
+      background: rgba(37,37,31,.24);
+    }
+
+    .margin-note {
+      color: var(--muted);
+      font-family: var(--note);
+      font-size: 8px;
+      letter-spacing: .08em;
+      line-height: 1.8;
+      writing-mode: vertical-rl;
+      text-transform: uppercase;
+    }
+
+    .margin-bottom {
+      margin-top: auto;
+      padding-bottom: 8px;
+      color: #9b782e;
+      font-family: var(--hand);
+      font-size: 12px;
+      transform: rotate(-4deg);
+    }
+
+    .ledger-main {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      padding: 2px 6px 0 0;
+    }
+
+    .intro-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 22px;
+      min-height: 91px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(37,37,31,.19);
+    }
+
+    .intro-copy {
+      max-width: 510px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 9px;
+      color: #8e6d39;
+      font-family: var(--note);
+      font-size: 9px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 19px;
+      height: 1px;
+      background: var(--rust);
+    }
+
+    .lede {
+      margin: 0;
+      color: #2d2d25;
+      font-family: var(--serif);
+      font-size: 22px;
+      letter-spacing: -.02em;
+      line-height: 1.55;
+    }
+
+    .lede em {
+      color: var(--rust);
+      font-style: normal;
+      border-bottom: 1px solid rgba(173,70,50,.45);
+    }
+
+    .subline {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-family: var(--hand);
+      font-size: 13px;
+    }
+
+    .stamps {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding-top: 4px;
+    }
+
+    .stamp {
+      display: flex;
+      min-width: 47px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      border: 1px solid rgba(173,70,50,.55);
+      color: var(--rust);
+      font-family: var(--serif);
+      font-size: 21px;
+      line-height: 1;
+      transform: rotate(-2deg);
+    }
+
+    .stamp:nth-child(2) {
+      border-color: rgba(37,37,31,.33);
+      color: #555146;
+      transform: rotate(1.2deg);
+    }
+
+    .stamp:nth-child(3) {
+      border-color: rgba(155,120,46,.55);
+      color: #96722d;
+      transform: rotate(-1deg);
+    }
+
+    .stamp small {
+      margin-top: 3px;
+      font-family: var(--hand);
+      font-size: 8px;
+      letter-spacing: .04em;
+    }
+
+    .task-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 42px;
+      border-bottom: 1px solid rgba(37,37,31,.18);
+    }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: #8a8171;
+      font-size: 10px;
+      letter-spacing: .05em;
+    }
+
+    .filters button {
+      padding: 9px 0;
+      color: inherit;
+      font-size: inherit;
+      letter-spacing: inherit;
+    }
+
+    .filters button.active {
+      color: var(--text);
+      border-bottom: 1px solid var(--rust);
+    }
+
+    .sort {
+      color: var(--muted);
+      font-family: var(--hand);
+      font-size: 12px;
+    }
+
+    .tasks {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: 49px 28px minmax(0, 1fr) auto;
+      gap: 13px;
+      align-items: center;
+      min-height: 76px;
+      padding: 10px 2px;
+      border-bottom: 1px solid rgba(37,37,31,.14);
+    }
+
+    .task-time {
+      color: var(--muted);
+      font-family: var(--note);
+      font-size: 9px;
+      letter-spacing: .04em;
+      line-height: 1.5;
+    }
+
+    .task-time strong {
+      display: block;
+      color: #4a473e;
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .task-node {
+      display: grid;
+      width: 19px;
+      height: 19px;
+      place-items: center;
+      border: 1px solid #898273;
+      border-radius: 50% 48% 52% 47%;
+      transform: rotate(-4deg);
+    }
+
+    .task-node::after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: transparent;
+    }
+
+    .task.overdue .task-node {
+      border-color: var(--rust);
+    }
+
+    .task.overdue .task-node::after { background: var(--rust); }
+
+    .task.done .task-node {
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .task.done .task-node::after {
+      width: 11px;
+      height: 6px;
+      border: solid var(--paper);
+      border-width: 0 0 1.5px 1.5px;
+      border-radius: 0;
+      background: none;
+      transform: translateY(-1px) rotate(-45deg);
+    }
+
+    .task-copy { min-width: 0; }
+
+    .task-title-row {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .task-title {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.4;
+      letter-spacing: -.01em;
+    }
+
+    .task.done .task-title {
+      color: #a39a88;
+      font-weight: 400;
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
+    }
+
+    .task-note {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-family: var(--hand);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .task-state {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-right: 2px;
+      color: #827968;
+      font-family: var(--note);
+      font-size: 9px;
+      white-space: nowrap;
+    }
+
+    .task-state .overdue-mark {
+      color: var(--rust);
+      border-bottom: 1px solid rgba(173,70,50,.4);
+      padding-bottom: 2px;
+    }
+
+    .task-state .more {
+      color: #8b8273;
+      font-family: var(--ui);
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .seal {
+      display: inline-grid;
+      min-width: 29px;
+      height: 29px;
+      place-items: center;
+      border: 1.5px solid var(--rust);
+      color: var(--rust);
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 700;
+      transform: rotate(-7deg);
+      opacity: .8;
+    }
+
+    .ledger-foot {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      min-height: 47px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(37,37,31,.24);
+    }
+
+    .ledger-foot p {
+      margin: 0;
+      color: var(--muted);
+      font-family: var(--hand);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .ledger-foot p strong {
+      color: var(--text);
+      font-weight: 400;
+      font-family: var(--serif);
+    }
+
+    .tiny-signature {
+      color: var(--rust);
+      font-family: var(--note);
+      font-size: 9px;
+      letter-spacing: .08em;
+      white-space: nowrap;
+      transform: rotate(-2deg);
+    }
+
+    .night-panel {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      padding: 27px 24px 18px;
+      border-left: 1px solid rgba(241,232,214,.15);
+      background:
+        radial-gradient(circle at 50% 20%, rgba(215,154,74,.06), transparent 37%),
+        #0d120e;
+    }
+
+    .night-panel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 23px;
+      width: 1px;
+      height: 90px;
+      background: linear-gradient(to bottom, rgba(215,154,74,.7), transparent);
+    }
+
+    .night-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding-bottom: 17px;
+      border-bottom: 1px solid rgba(241,232,214,.18);
+    }
+
+    .night-kicker {
+      margin: 0 0 5px;
+      color: var(--amber);
+      font-family: var(--note);
+      font-size: 8px;
+      letter-spacing: .13em;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .night-head h2 {
+      margin: 0;
+      color: var(--paper);
+      font-family: var(--serif);
+      font-size: 27px;
+      font-weight: 500;
+      letter-spacing: -.04em;
+    }
+
+    .moon-mark {
+      display: grid;
+      width: 33px;
+      height: 33px;
+      place-items: center;
+      color: var(--amber);
+      border: 1px solid rgba(241,232,214,.3);
+      border-radius: 50%;
+      font-family: var(--serif);
+      font-size: 21px;
+      transform: rotate(10deg);
+    }
+
+    .worker-wrap {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      min-height: 78px;
+      padding: 14px 0 0;
+    }
+
+    .worker-note {
+      position: relative;
+      flex: 0 0 68px;
+      height: 69px;
+      background: var(--paper);
+      border: 1px solid rgba(37,37,31,.35);
+      transform: rotate(-4deg);
+      box-shadow: 3px 3px 0 rgba(0,0,0,.17);
+    }
+
+    .worker-note svg {
+      position: absolute;
+      inset: 4px;
+      width: calc(100% - 8px);
+      height: calc(100% - 8px);
+      color: var(--ink);
+    }
+
+    .worker-copy {
+      padding-top: 3px;
+      color: rgba(241,232,214,.66);
+      font-family: var(--hand);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .worker-copy b {
+      color: var(--paper);
+      font-weight: 400;
+      font-family: var(--serif);
+      font-size: 13px;
+    }
+
+    .night-chat {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+      gap: 9px;
+      padding: 14px 0 9px;
+    }
+
+    .night-bubble {
+      max-width: 100%;
+      padding: 9px 10px;
+      color: rgba(241,232,214,.86);
+      border: 1px solid rgba(241,232,214,.2);
+      background: rgba(241,232,214,.035);
+      font-size: 11.5px;
+      line-height: 1.7;
+    }
+
+    .night-bubble.user {
+      align-self: flex-end;
+      max-width: 90%;
+      border-color: transparent;
+      background: rgba(241,232,214,.09);
+      color: rgba(241,232,214,.74);
+      text-align: right;
+    }
+
+    .night-bubble em {
+      color: var(--amber);
+      font-style: normal;
+    }
+
+    .confirm-card {
+      position: relative;
+      padding: 12px 12px 11px;
+      background: var(--paper);
+      color: var(--text);
+      border: 1px solid rgba(37,37,31,.55);
+      box-shadow: 4px 4px 0 rgba(0,0,0,.2);
+      transform: rotate(.7deg);
+    }
+
+    .confirm-card::before {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: 18px;
+      width: 54px;
+      height: 9px;
+      background: rgba(215,154,74,.65);
+      transform: rotate(-2deg);
+    }
+
+    .confirm-kicker {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0 0 7px;
+      color: var(--rust);
+      font-family: var(--note);
+      font-size: 8px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .confirm-kicker::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      background: var(--rust);
+      border-radius: 50%;
+    }
+
+    .confirm-card p {
+      margin: 0 0 9px;
+      font-family: var(--serif);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .confirm-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .seal-button {
+      padding: 5px 9px;
+      border: 1px solid var(--rust);
+      color: var(--rust);
+      font-family: var(--hand);
+      font-size: 12px;
+      transform: rotate(-1.5deg);
+    }
+
+    .quiet-button {
+      color: var(--muted);
+      font-family: var(--hand);
+      font-size: 11px;
+      border-bottom: 1px dotted #a29a8a;
+    }
+
+    .night-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 8px 0 0;
+      border-bottom: 1px solid rgba(241,232,214,.28);
+    }
+
+    .night-input input {
+      min-width: 0;
+      flex: 1;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--paper);
+      font-family: var(--note);
+      font-size: 10px;
+    }
+
+    .night-input input::placeholder { color: rgba(241,232,214,.42); opacity: 1; }
+
+    .night-send {
+      width: 29px;
+      height: 29px;
+      border: 1px solid rgba(241,232,214,.55);
+      border-radius: 50%;
+      color: var(--amber);
+      font-family: var(--ui);
+      font-size: 15px;
+      transform: rotate(-7deg);
+    }
+
+    .night-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 13px;
+      color: rgba(241,232,214,.35);
+      font-family: var(--note);
+      font-size: 8px;
+      letter-spacing: .03em;
+    }
+
+    .night-foot span:nth-child(2) {
+      color: rgba(215,154,74,.62);
+      font-family: var(--hand);
+      font-size: 10px;
+      transform: rotate(-2deg);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .write-button:hover { background: rgba(37,37,31,.06); }
+      .seal-button:hover { background: rgba(173,70,50,.08); }
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <aside class="spine" aria-label="TaskPilot">
+      <div class="spine-logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M18.2 2.6 7.9 17.2h7.2L13.6 29 25 13.2h-7.2l.4-10.6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="spine-word">TaskPilot</div>
+      <div class="spine-sub">AFTER HOURS</div>
+      <div class="spine-line"></div>
+      <div class="spine-date">2026.11.03<br>TUE / 夜</div>
+      <div class="spine-mark">夜</div>
+    </aside>
+
+    <main class="room">
+      <section class="ledger" aria-labelledby="ledger-title">
+        <header class="ledger-top">
+          <div class="paper-brand">TaskPilot <span>夜茶手账 · 今日</span></div>
+          <div class="ledger-meta">
+            <span>VOL. 03 / <b>11.03.2026</b></span>
+            <button class="write-button" type="button"><b>＋</b> 记下一件</button>
+          </div>
+        </header>
+
+        <div class="ledger-body">
+          <div class="margin-column">
+            <div class="issue">EVENING EDITION</div>
+            <h1 class="vertical-title" id="ledger-title">
+              <span>把</span><span>今</span><span>天</span><span>收</span><span>好</span>
+            </h1>
+            <div class="title-line"></div>
+            <div class="margin-note">NO RUSH<br>BEFORE MIDNIGHT</div>
+            <div class="margin-bottom">慢慢来，<br>也是一件事。</div>
+          </div>
+
+          <div class="ledger-main">
+            <div class="intro-row">
+              <div class="intro-copy">
+                <p class="eyebrow">TODAY'S NOTES / 今晚的三件小事</p>
+                <p class="lede">夜里还有三件事，<br>不必都做完。<em>先做最亮的那件。</em></p>
+                <p class="subline">把清单写短一点，把呼吸放长一点。</p>
+              </div>
+              <div class="stamps" aria-label="任务统计">
+                <div class="stamp">03<small>待办</small></div>
+                <div class="stamp">01<small>完成</small></div>
+                <div class="stamp">01<small>逾期</small></div>
+              </div>
+            </div>
+
+            <nav class="task-toolbar" aria-label="任务筛选">
+              <div class="filters">
+                <button class="active" type="button">全部 / 04</button>
+                <button type="button">待办 / 03</button>
+                <button type="button">完成 / 01</button>
+              </div>
+              <button class="sort" type="button">按截止时间 · 从上到下</button>
+            </nav>
+
+            <ol class="tasks">
+              <li class="task overdue">
+                <div class="task-time"><strong>15:00</strong>今天</div>
+                <span class="task-node" role="img" aria-label="逾期未完成"></span>
+                <div class="task-copy">
+                  <div class="task-title-row">
+                    <span class="task-title">完成实验报告</span>
+                  </div>
+                  <p class="task-note">把结果和图补完，发给周老师。</p>
+                </div>
+                <div class="task-state">
+                  <span class="overdue-mark">已逾期 6 小时</span>
+                  <button class="more" type="button" aria-label="完成实验报告的更多操作">⋯</button>
+                </div>
+              </li>
+
+              <li class="task">
+                <div class="task-time"><strong>18:00</strong>明天</div>
+                <span class="task-node" role="img" aria-label="未完成"></span>
+                <div class="task-copy">
+                  <div class="task-title-row">
+                    <span class="task-title">梳理项目周报</span>
+                  </div>
+                  <p class="task-note">把本周进度和卡点列出来，不用写漂亮。</p>
+                </div>
+                <div class="task-state">
+                  <span>还有一整晚</span>
+                  <button class="more" type="button" aria-label="梳理项目周报的更多操作">⋯</button>
+                </div>
+              </li>
+
+              <li class="task">
+                <div class="task-time"><strong>—</strong>无截止</div>
+                <span class="task-node" role="img" aria-label="未完成"></span>
+                <div class="task-copy">
+                  <div class="task-title-row">
+                    <span class="task-title">给牙医打个电话</span>
+                  </div>
+                  <p class="task-note">问一下下周还有没有空位。</p>
+                </div>
+                <div class="task-state">
+                  <span>有空再说</span>
+                  <button class="more" type="button" aria-label="给牙医打电话的更多操作">⋯</button>
+                </div>
+              </li>
+
+              <li class="task done">
+                <div class="task-time"><strong>昨天</strong>已办</div>
+                <span class="task-node" role="img" aria-label="已完成"></span>
+                <div class="task-copy">
+                  <div class="task-title-row">
+                    <span class="task-title">买一盒乌龙茶</span>
+                  </div>
+                  <p class="task-note">回家路上顺手带一盒。</p>
+                </div>
+                <div class="task-state">
+                  <span class="seal">好</span>
+                  <button class="more" type="button" aria-label="买一盒乌龙茶的更多操作">⋯</button>
+                </div>
+              </li>
+            </ol>
+
+            <div class="ledger-foot">
+              <p><strong>今晚的小签：</strong>做完实验报告，就把电脑合上。<br>剩下的明天再想，天不会塌。</p>
+              <div class="tiny-signature">TASKS / 04 · OPEN / 03</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="night-panel" aria-label="AI 助手夜话">
+      <header class="night-head">
+        <div>
+          <p class="night-kicker">TINY OPERATOR / NIGHT SHIFT</p>
+          <h2>小帮手 · 夜话</h2>
+        </div>
+        <span class="moon-mark" aria-hidden="true">☾</span>
+      </header>
+
+      <div class="worker-wrap">
+        <div class="worker-note" aria-hidden="true">
+          <svg viewBox="0 0 90 90" fill="none">
+            <g stroke="currentColor" stroke-width="2.1" stroke-linecap="butt" stroke-linejoin="miter">
+              <path d="M39 19c-2-8 5-13 11-12 3-6 12-6 15-1 7 0 9 6 5 10 5 4 2 10-3 11-2 5-7 7-12 5-5 3-11 0-12-4-6-1-7-5-4-9"/>
+              <path d="M42 32c-2 8-2 13-1 20m16-20c1 6 3 12 5 19"/>
+              <path d="M38 41 24 51m39-10 15 3"/>
+              <path d="M41 52c-3 7-5 14-10 19m27-19c3 6 6 12 10 16"/>
+              <path d="M55 37c7 4 12 8 15 14"/>
+            </g>
+            <path d="M66 49c5-4 10-5 15-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="m24 37-4 3m57 10 3-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="worker-copy">
+          <b>它把今晚的清单</b><br>
+          轻轻放在这里了。写操作仍然<br>只等你点头。
+        </div>
+      </div>
+
+      <div class="night-chat">
+        <div class="night-bubble user">实验报告我已经交了。还有哪些没做？</div>
+        <div class="night-bubble">还有 <em>3 件</em>未完成：整理项目周报、给牙医打电话，以及刚说交掉的实验报告。</div>
+        <div class="night-bubble">要把「完成实验报告」收掉吗？收掉之后，今天就算完成了一件。</div>
+
+        <div class="confirm-card">
+          <p class="confirm-kicker">WAITING FOR YOUR NOD</p>
+          <p>把「完成实验报告」标记为已完成</p>
+          <div class="confirm-actions">
+            <button class="seal-button" type="button">盖章确认</button>
+            <button class="quiet-button" type="button">先放一放</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="night-input">
+        <input type="text" placeholder="跟我说一句今晚的心情…" aria-label="和 AI 助手说话" />
+        <button class="night-send" type="button" aria-label="发送消息">↗</button>
+      </div>
+      <div class="night-foot">
+        <span>LOCAL / PRIVATE / SLOW</span>
+        <span>写操作等你点头。</span>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>

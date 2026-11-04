@@ -1,0 +1,903 @@
+/* -------------------------------------------------------------------------- */
+/* TaskPilot V2.0 — 专注、日历、风险、重复任务与设置                            */
+/* 沿用 Paper Day 的纸张、墨线、胶带语言。                                      */
+/* -------------------------------------------------------------------------- */
+
+/* Focus -------------------------------------------------------------------- */
+
+.focus-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.focus-running {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 6px 2px 2px;
+}
+
+.focus-task-name {
+  margin: 0;
+  font-family: var(--hand);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.focus-clock {
+  margin: 2px 0 6px;
+  font-family: var(--note-font);
+  font-size: 52px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.focus-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.focus-hint,
+.focus-remaining-work {
+  margin: 0;
+  color: var(--soft);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.focus-remaining-work {
+  padding: 8px 10px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 4px;
+  background: rgba(24, 24, 19, 0.02);
+  font-family: var(--note-font);
+  font-size: 11.5px;
+}
+
+.focus-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.focus-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 2px;
+}
+
+.focus-setup > .paper-inline-button {
+  align-self: flex-start;
+}
+
+.focus-setup-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.focus-mode {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--soft);
+  font-size: 12px;
+}
+
+.focus-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.focus-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.focus-stat-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 4px;
+  background: rgba(251, 247, 237, 0.7);
+}
+
+.focus-stat-row strong {
+  font-family: var(--hand);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.focus-stat-row span {
+  color: var(--faint);
+  font-size: 10.5px;
+}
+
+.focus-bars {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  height: 120px;
+  padding: 6px 2px 0;
+}
+
+.focus-bar {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.focus-bar-track {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 72px;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.focus-bar-fill {
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, var(--lime), #c7dc5c);
+  box-shadow: inset 0 0 0 1px rgba(24, 24, 19, 0.12);
+}
+
+.focus-bar em {
+  color: var(--faint);
+  font-family: var(--note-font);
+  font-size: 10px;
+  font-style: normal;
+}
+
+.focus-bar small {
+  color: var(--soft);
+  font-size: 10px;
+}
+
+.focus-subhead {
+  margin: 4px 0 0;
+  font-family: var(--hand);
+  font-size: 15px;
+}
+
+.focus-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.focus-task-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px dashed var(--line);
+  font-size: 12px;
+}
+
+.focus-task-list strong {
+  font-family: var(--note-font);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Calendar ----------------------------------------------------------------- */
+
+.calendar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.calendar-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px 9px 5px 10px;
+  background: var(--sheet);
+  box-shadow: 4px 4px 0 rgba(24, 24, 19, 0.06);
+}
+
+.calendar-views {
+  display: flex;
+  gap: 10px;
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.calendar-nav strong {
+  min-width: 170px;
+  font-family: var(--hand);
+  font-size: 15px;
+  text-align: center;
+}
+
+.calendar-grid-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.calendar-month {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.calendar-weekday {
+  padding: 2px 0 6px;
+  border-bottom: 1px dashed var(--line-strong);
+  color: var(--faint);
+  font-family: var(--note-font);
+  font-size: 10.5px;
+  text-align: center;
+}
+
+.calendar-cell {
+  display: flex;
+  min-height: 78px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 7px;
+  border: 1px solid var(--line);
+  border-radius: 4px 7px 4px 6px;
+  background: rgba(251, 247, 237, 0.66);
+  text-align: left;
+  transition: transform 0.14s ease, border-color 0.14s ease, background-color 0.14s ease;
+}
+
+.calendar-cell:hover {
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.calendar-cell.is-today {
+  border-color: var(--rust);
+  border-style: dashed;
+}
+
+.calendar-cell.is-selected {
+  border-color: var(--ink);
+  background: var(--note);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.calendar-date {
+  font-family: var(--hand);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.calendar-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+}
+
+.mark-block {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--leaf);
+}
+
+.mark-due {
+  color: var(--rust);
+  font-family: var(--note-font);
+  font-size: 9px;
+  font-style: normal;
+}
+
+.calendar-planned {
+  margin-top: auto;
+  color: var(--faint);
+  font-family: var(--note-font);
+  font-size: 9.5px;
+}
+
+.calendar-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.calendar-subhead {
+  margin: 14px 0 6px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+  font-family: var(--hand);
+  font-size: 15px;
+}
+
+.block-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.block-time-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.block-time-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--faint);
+  font-size: 10px;
+}
+
+.block-time-inputs input,
+.block-row input {
+  padding: 4px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--sheet);
+  color: var(--ink);
+  font-family: var(--note-font);
+  font-size: 11.5px;
+}
+
+.block-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.block-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 12px;
+}
+
+.block-time {
+  color: var(--leaf);
+  font-family: var(--note-font);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.block-title {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.block-minutes {
+  color: var(--faint);
+  font-size: 10px;
+}
+
+.block-actions {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.due-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+
+.due-task-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.due-task-list em {
+  color: var(--faint);
+  font-family: var(--note-font);
+  font-size: 10px;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.due-task-list em.is-blocked {
+  color: var(--rust);
+}
+
+.calendar-day-single {
+  padding: 6px 2px;
+}
+
+.replan-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.replan-explanation {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--soft);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.replan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.replan-table th,
+.replan-table td {
+  padding: 5px 6px;
+  border: 1px solid var(--line);
+  text-align: left;
+}
+
+.replan-table th {
+  background: var(--note);
+  font-family: var(--hand);
+  font-weight: 700;
+}
+
+/* Insights ----------------------------------------------------------------- */
+
+.insight-board {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.insight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.insight-item {
+  padding: 9px 11px;
+  border: 1px solid var(--line-strong);
+  border-left-width: 4px;
+  border-radius: 3px 6px 3px 5px;
+  background: rgba(251, 247, 237, 0.75);
+}
+
+.insight-item.severity-high {
+  border-left-color: var(--rust);
+}
+
+.insight-item.severity-medium {
+  border-left-color: #b36b1c;
+}
+
+.insight-item.severity-low {
+  border-left-color: var(--leaf);
+}
+
+.insight-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.insight-head strong {
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.insight-severity {
+  padding: 1px 5px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: var(--soft);
+  font-family: var(--note-font);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.insight-reason,
+.insight-suggestion {
+  margin: 5px 0 0;
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.insight-reason {
+  color: var(--soft);
+}
+
+.insight-suggestion {
+  color: var(--ink);
+}
+
+.insight-suggestion::before {
+  color: var(--rust);
+  content: '→ ';
+}
+
+.insight-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.inline-error-text {
+  margin: 0;
+  color: var(--rust);
+  font-size: 12px;
+}
+
+/* Dependencies ------------------------------------------------------------- */
+
+.dependency-panel {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line-strong);
+}
+
+.dependency-blocked {
+  margin: 0 0 8px;
+  padding: 7px 9px;
+  border: 1px dashed var(--rust);
+  border-radius: 4px;
+  background: rgba(163, 63, 34, 0.06);
+  color: var(--rust);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.detail-subhead {
+  margin: 10px 0 5px;
+  font-family: var(--hand);
+  font-size: 14px;
+}
+
+.dependency-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+
+.dependency-list li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dependency-status {
+  flex: none;
+  padding: 0 5px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-family: var(--note-font);
+  font-size: 9px;
+}
+
+.dependency-status.completed {
+  border-color: var(--leaf);
+  color: var(--leaf);
+}
+
+.dependency-status.pending {
+  border-color: var(--rust);
+  color: var(--rust);
+}
+
+.dependency-title {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.dependency-add {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.dependency-add select {
+  min-width: 0;
+  flex: 1;
+  padding: 4px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--sheet);
+  font-size: 12px;
+}
+
+/* Recurrence --------------------------------------------------------------- */
+
+.recurrence-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recurrence-panel > .paper-inline-button {
+  align-self: flex-start;
+}
+
+.recurrence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recurrence-list li {
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.recurrence-list li.is-paused {
+  opacity: 0.66;
+}
+
+.recurrence-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.recurrence-freq {
+  color: var(--leaf);
+  font-family: var(--note-font);
+  font-size: 10px;
+}
+
+.recurrence-meta {
+  margin: 4px 0 6px;
+  color: var(--faint);
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+
+.recurrence-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.recurrence-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recurrence-form label,
+.settings-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--soft);
+  font-size: 11.5px;
+}
+
+.recurrence-form input,
+.recurrence-form select,
+.settings-form input,
+.settings-form select {
+  padding: 6px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--sheet);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 13px;
+}
+
+.recurrence-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.recurrence-weekdays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.recurrence-weekdays label {
+  flex-direction: row;
+  gap: 4px;
+  align-items: center;
+}
+
+/* Reports enhancements ----------------------------------------------------- */
+
+.report-enhanced-toggle {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  color: var(--soft);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.report-enhanced-toggle input {
+  margin-top: 2px;
+}
+
+/* Assistant voice input ----------------------------------------------------- */
+
+.voice-button {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1.3px solid var(--ink);
+  border-radius: 12px 4px 10px 5px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--hand);
+  font-size: 12px;
+  font-weight: 700;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.voice-button:hover:not(:disabled) {
+  background: var(--lime);
+}
+
+.voice-button.is-listening {
+  border-color: var(--rust);
+  background: rgba(163, 63, 34, 0.08);
+  color: var(--rust);
+  animation: voice-pulse 1.2s ease-in-out infinite;
+}
+
+.voice-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.voice-interim {
+  margin: 0;
+  padding: 0 4px 4px;
+  color: var(--rust);
+  font-family: var(--note-font);
+  font-size: 10.5px;
+}
+
+@keyframes voice-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(163, 63, 34, 0.22);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(163, 63, 34, 0);
+  }
+}
+
+/* Settings ----------------------------------------------------------------- */
+
+.settings-form {
+  display: flex;
+  max-width: 560px;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.settings-workdays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 4px;
+}
+
+.settings-workdays legend {
+  padding: 0 4px;
+  color: var(--faint);
+  font-family: var(--note-font);
+  font-size: 10.5px;
+}
+
+.settings-workdays label {
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+}
+
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Responsive --------------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+  .focus-grid,
+  .calendar-grid-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .calendar-cell {
+    min-height: 58px;
+    padding: 4px;
+  }
+
+  .calendar-date {
+    font-size: 13px;
+  }
+
+  .calendar-planned,
+  .mark-due {
+    display: none;
+  }
+
+  .focus-clock {
+    font-size: 42px;
+  }
+
+  .calendar-toolbar,
+  .calendar-nav {
+    flex-wrap: wrap;
+  }
+
+  .calendar-nav strong {
+    min-width: 0;
+  }
+
+  .recurrence-form-row {
+    grid-template-columns: 1fr;
+  }
+}

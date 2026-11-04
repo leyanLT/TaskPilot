@@ -1,0 +1,9 @@
+node_modules
+dist
+coverage
+test-output.log
+test-error.log
+*.log
+.env
+Dockerfile
+.dockerignore

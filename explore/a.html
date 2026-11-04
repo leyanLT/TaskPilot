@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>纸上飞行 · TaskPilot</title>
+  <style>
+    :root {
+      --paper: #f3eddf;
+      --sheet: #fbf7ed;
+      --ink: #181813;
+      --soft: #736d60;
+      --faint: #aca493;
+      --line: rgba(24, 24, 19, 0.18);
+      --lime: #dcef72;
+      --orange: #f26b3f;
+      --leaf: #2c6b50;
+      --hand: "KaiTi", "STKaiti", "Kaiti SC", "FangSong", serif;
+      --ui: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
+      --note: "Segoe Script", "Bradley Hand ITC", var(--hand);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-width: 1440px;
+      min-height: 900px;
+      background: #d9d3c5;
+      color: var(--ink);
+      font-family: var(--ui);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+    }
+
+    .page {
+      position: relative;
+      width: 1440px;
+      min-height: 900px;
+      padding: 24px 44px 18px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(255,255,255,.62) 0 1px, transparent 1.5px) 0 0 / 19px 19px,
+        var(--paper);
+    }
+
+    .page::after {
+      content: "";
+      position: absolute;
+      right: -140px;
+      bottom: -170px;
+      width: 510px;
+      height: 510px;
+      border: 1.5px solid rgba(24, 24, 19, .06);
+      border-radius: 48% 52% 45% 55%;
+      transform: rotate(18deg);
+      pointer-events: none;
+    }
+
+    button, input { font: inherit; color: inherit; }
+    button { border: 0; background: none; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    .topbar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      height: 50px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 270px;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1.8px solid var(--ink);
+      border-radius: 46% 54% 48% 52% / 53% 43% 57% 47%;
+      transform: rotate(-7deg);
+      background: var(--sheet);
+    }
+
+    .brand-mark svg { width: 23px; height: 23px; }
+
+    .brand-word {
+      font-family: var(--hand);
+      font-size: 27px;
+      font-weight: 700;
+      letter-spacing: -1.4px;
+      line-height: 1;
+    }
+
+    .brand-note {
+      align-self: flex-end;
+      margin: 0 0 2px 1px;
+      color: var(--soft);
+      font-family: var(--hand);
+      font-size: 12px;
+      letter-spacing: .08em;
+    }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: 27px;
+      margin-left: 20px;
+      color: #5c584d;
+      font-size: 13px;
+    }
+
+    .main-nav a {
+      position: relative;
+      padding: 8px 0;
+    }
+
+    .main-nav a.active {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .main-nav a.active::after {
+      content: "";
+      position: absolute;
+      right: -4px;
+      bottom: 2px;
+      left: -4px;
+      height: 5px;
+      background: var(--lime);
+      transform: rotate(-1.4deg);
+      z-index: -1;
+    }
+
+    .main-nav a:not(.active) {
+      font-family: var(--hand);
+      font-size: 15px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .date-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--soft);
+      font-family: var(--note);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .date-block strong {
+      color: var(--ink);
+      font-family: var(--hand);
+      font-size: 18px;
+      letter-spacing: .02em;
+    }
+
+    .date-block em {
+      font-style: normal;
+      color: var(--soft);
+    }
+
+    .new-task {
+      position: relative;
+      padding: 11px 19px 10px;
+      border: 1.7px solid var(--ink);
+      border-radius: 6px 10px 7px 12px;
+      background: var(--ink);
+      color: var(--sheet);
+      font-family: var(--hand);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      box-shadow: 3px 3px 0 var(--orange);
+      transform: rotate(-.8deg);
+    }
+
+    .new-task span {
+      margin-right: 4px;
+      color: var(--lime);
+      font-family: var(--ui);
+      font-size: 16px;
+    }
+
+    .rough-divider {
+      width: 100%;
+      height: 12px;
+      margin: 11px 0 0;
+      color: rgba(24, 24, 19, .34);
+    }
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      gap: 24px;
+      align-items: end;
+      min-height: 187px;
+      padding: 18px 10px 20px 3px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 10px;
+      color: var(--soft);
+      font-family: var(--note);
+      font-size: 12px;
+      letter-spacing: .16em;
+    }
+
+    .eyebrow i {
+      width: 9px;
+      height: 9px;
+      border: 1.5px solid var(--ink);
+      border-radius: 51% 49% 43% 57%;
+      background: var(--orange);
+      transform: rotate(11deg);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: var(--hand);
+      font-size: 75px;
+      font-weight: 700;
+      letter-spacing: -4px;
+      line-height: .93;
+      transform: rotate(-.35deg);
+    }
+
+    .hero h1 .marker {
+      position: relative;
+      display: inline-block;
+      z-index: 0;
+    }
+
+    .hero h1 .marker::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      right: -11px;
+      bottom: 2px;
+      left: -10px;
+      height: 20px;
+      border-radius: 47% 53% 45% 55% / 55% 47% 53% 45%;
+      background: var(--lime);
+      transform: rotate(-1.7deg);
+    }
+
+    .hero-sub {
+      margin: 14px 0 0;
+      color: #635e52;
+      font-family: var(--hand);
+      font-size: 17px;
+      letter-spacing: .03em;
+    }
+
+    .hero-side {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 5px;
+    }
+
+    .margin-note {
+      position: relative;
+      width: 168px;
+      color: #4e4a40;
+      font-family: var(--note);
+      font-size: 12px;
+      line-height: 1.65;
+      transform: rotate(2.2deg);
+    }
+
+    .margin-note strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--ink);
+      font-family: var(--hand);
+      font-size: 16px;
+    }
+
+    .margin-note svg {
+      position: absolute;
+      right: -4px;
+      bottom: -24px;
+      width: 44px;
+      height: 34px;
+      color: var(--ink);
+    }
+
+    .counts {
+      display: flex;
+      align-items: flex-end;
+      gap: 14px;
+      padding-top: 20px;
+    }
+
+    .count {
+      display: flex;
+      min-width: 54px;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .count strong {
+      font-family: var(--hand);
+      font-size: 39px;
+      font-weight: 700;
+      line-height: .9;
+      letter-spacing: -2px;
+    }
+
+    .count span {
+      color: var(--soft);
+      font-family: var(--hand);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .count:nth-child(2) strong {
+      color: var(--leaf);
+    }
+
+    .count:nth-child(3) {
+      transform: translateY(-8px);
+    }
+
+    .count:nth-child(3) strong {
+      color: var(--orange);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.48fr) minmax(348px, .72fr);
+      gap: 24px;
+      height: 561px;
+    }
+
+    .task-sheet {
+      position: relative;
+      display: flex;
+      height: 100%;
+      min-width: 0;
+      flex-direction: column;
+      padding: 22px 26px 14px;
+      border: 1.5px solid var(--ink);
+      border-radius: 5px 12px 7px 14px;
+      background:
+        linear-gradient(to bottom, transparent 0, transparent 73px, rgba(24,24,19,.065) 73px, rgba(24,24,19,.065) 74px) 0 148px / 100% 74px,
+        var(--sheet);
+      box-shadow: 7px 8px 0 rgba(24, 24, 19, .075);
+      transform: rotate(.18deg);
+    }
+
+    .task-sheet::after {
+      content: "";
+      position: absolute;
+      right: -1.5px;
+      bottom: -1.5px;
+      width: 27px;
+      height: 27px;
+      border-top: 1.5px solid var(--ink);
+      border-left: 1.5px solid var(--ink);
+      background: #ece4d5;
+      clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+
+    .tape {
+      position: absolute;
+      top: -13px;
+      left: 47%;
+      width: 86px;
+      height: 26px;
+      background: rgba(220, 239, 114, .76);
+      transform: rotate(-2deg);
+      border-left: 1px dashed rgba(24,24,19,.18);
+      border-right: 1px dashed rgba(24,24,19,.18);
+    }
+
+    .tape.tiny {
+      top: -16px;
+      left: 22px;
+      width: 59px;
+      height: 22px;
+      background: rgba(242, 107, 63, .28);
+      transform: rotate(3.5deg);
+    }
+
+    .sheet-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 58px;
+      padding: 0 2px 11px;
+      border-bottom: 1px solid rgba(24,24,19,.28);
+    }
+
+    .sheet-title {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .section-no {
+      color: var(--orange);
+      font-family: var(--note);
+      font-size: 12px;
+      letter-spacing: .08em;
+    }
+
+    .sheet-title h2 {
+      margin: 0;
+      font-family: var(--hand);
+      font-size: 25px;
+      letter-spacing: -.04em;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding-top: 2px;
+    }
+
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    .tabs button {
+      padding: 4px 0;
+      color: inherit;
+      font-size: 12px;
+    }
+
+    .tabs button.active {
+      color: var(--ink);
+      font-weight: 700;
+      text-decoration: underline;
+      text-decoration-color: var(--orange);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+    }
+
+    .tabs .tab-count {
+      margin-left: 3px;
+      color: var(--faint);
+      font-family: var(--note);
+      font-size: 10px;
+    }
+
+    .sort {
+      padding-bottom: 3px;
+      border-bottom: 1px dashed var(--soft);
+      color: #555045;
+      font-family: var(--hand);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .task-list {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task-row {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr) 165px 24px;
+      gap: 12px;
+      align-items: center;
+      min-height: 74px;
+      padding: 11px 3px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .task-row:last-child { border-bottom: 0; }
+
+    .task-check {
+      position: relative;
+      display: grid;
+      width: 22px;
+      height: 22px;
+      place-items: center;
+      border: 1.7px solid var(--ink);
+      border-radius: 4px 6px 5px 3px;
+      background: transparent;
+      transform: rotate(-1deg);
+    }
+
+    .task-check.checked {
+      background: var(--ink);
+      color: var(--lime);
+    }
+
+    .task-check svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .task-copy { min-width: 0; }
+
+    .task-title-line {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .task-title {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -.01em;
+    }
+
+    .task-row.is-done .task-title {
+      color: #a49e91;
+      font-weight: 500;
+      text-decoration: line-through;
+      text-decoration-thickness: 1.5px;
+      text-decoration-color: #8c8578;
+    }
+
+    .pencil-tag {
+      display: inline-block;
+      padding: 1px 7px 2px;
+      border: 1px solid rgba(242,107,63,.72);
+      border-radius: 8px 5px 10px 4px;
+      color: #a33f22;
+      font-family: var(--hand);
+      font-size: 11px;
+      line-height: 1.4;
+      transform: rotate(-2deg);
+    }
+
+    .task-sub {
+      margin: 2px 0 0;
+      color: var(--soft);
+      font-family: var(--hand);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .task-when {
+      color: #5f5a4f;
+      font-family: var(--note);
+      font-size: 11px;
+      line-height: 1.55;
+      text-align: right;
+    }
+
+    .task-when strong {
+      display: block;
+      color: var(--ink);
+      font-family: var(--hand);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .task-when.overdue strong {
+      color: var(--orange);
+    }
+
+    .task-more {
+      width: 24px;
+      height: 24px;
+      color: var(--soft);
+      font-size: 18px;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .sheet-foot {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 11px 2px 2px;
+      border-top: 1px dashed rgba(24,24,19,.22);
+    }
+
+    .sheet-foot p {
+      margin: 0;
+      color: #635d50;
+      font-family: var(--note);
+      font-size: 12px;
+      line-height: 1.6;
+      transform: rotate(-.6deg);
+    }
+
+    .sheet-foot p strong {
+      color: var(--ink);
+      font-family: var(--hand);
+      font-size: 15px;
+    }
+
+    .tiny-marks {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--soft);
+      font-family: var(--hand);
+      font-size: 11px;
+    }
+
+    .tiny-marks span {
+      display: grid;
+      width: 18px;
+      height: 18px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+    }
+
+    .helper-note {
+      position: relative;
+      display: flex;
+      height: 100%;
+      min-width: 0;
+      flex-direction: column;
+      padding: 20px 20px 14px;
+      border: 1.6px solid var(--ink);
+      border-radius: 4px 9px 4px 12px;
+      background: #f0e6a8;
+      box-shadow: 6px 7px 0 rgba(24, 24, 19, .09);
+      transform: rotate(1deg);
+    }
+
+    .helper-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(24,24,19,.24);
+    }
+
+    .helper-doodle {
+      width: 63px;
+      height: 62px;
+      flex: 0 0 63px;
+      color: var(--ink);
+      transform: translateY(5px) rotate(-2deg);
+    }
+
+    .helper-title {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .helper-title strong {
+      display: block;
+      font-family: var(--hand);
+      font-size: 21px;
+      line-height: 1.1;
+    }
+
+    .helper-title span {
+      display: block;
+      margin-top: 3px;
+      color: #686047;
+      font-family: var(--note);
+      font-size: 10px;
+    }
+
+    .online {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #5d6141;
+      font-family: var(--note);
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .online::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--leaf);
+    }
+
+    .helper-chat {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 11px;
+      padding: 17px 0 10px;
+    }
+
+    .bubble {
+      position: relative;
+      max-width: 88%;
+      padding: 10px 12px;
+      border: 1.4px solid rgba(24,24,19,.75);
+      border-radius: 11px 11px 2px 11px;
+      background: var(--sheet);
+      color: #38352d;
+      font-size: 12.5px;
+      line-height: 1.65;
+    }
+
+    .bubble.user {
+      align-self: flex-end;
+      border-radius: 12px 12px 12px 2px;
+      border-color: rgba(24,24,19,.5);
+      background: var(--ink);
+      color: var(--sheet);
+    }
+
+    .bubble.helper {
+      align-self: flex-start;
+    }
+
+    .bubble.helper + .bubble.helper {
+      margin-top: -5px;
+    }
+
+    .bubble strong {
+      color: var(--ink);
+    }
+
+    .bubble.user strong {
+      color: var(--lime);
+    }
+
+    .pending-card {
+      margin-top: 1px;
+      padding: 12px 12px 11px;
+      border: 1.7px dashed rgba(24,24,19,.68);
+      border-radius: 5px 9px 6px 10px;
+      background: rgba(251,247,237,.58);
+      transform: rotate(-.45deg);
+    }
+
+    .pending-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 7px;
+      color: #9b482b;
+      font-family: var(--note);
+      font-size: 10px;
+      letter-spacing: .08em;
+    }
+
+    .pending-label::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border: 1px solid #9b482b;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+
+    .pending-card p {
+      margin: 0 0 10px;
+      font-family: var(--hand);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .pending-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .mini-btn {
+      padding: 5px 10px;
+      border: 1.2px solid var(--ink);
+      border-radius: 4px 6px 4px 7px;
+      background: transparent;
+      font-family: var(--hand);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .mini-btn.primary {
+      background: var(--orange);
+      color: #21140e;
+    }
+
+    .helper-input {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      height: 42px;
+      padding: 0 10px 0 13px;
+      border: 1.4px solid rgba(24,24,19,.42);
+      border-radius: 8px 7px 9px 5px;
+      background: rgba(251,247,237,.62);
+    }
+
+    .helper-input input {
+      min-width: 0;
+      flex: 1;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--note);
+      font-size: 11px;
+    }
+
+    .helper-input input::placeholder { color: #817a65; opacity: 1; }
+
+    .send-doodle {
+      display: grid;
+      width: 26px;
+      height: 26px;
+      place-items: center;
+      border: 1.2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--lime);
+      font-size: 15px;
+      line-height: 1;
+      transform: rotate(-8deg);
+    }
+
+    .helper-foot {
+      margin: 8px 0 0;
+      color: #746d54;
+      font-family: var(--note);
+      font-size: 9px;
+      text-align: right;
+    }
+
+    .page-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 31px;
+      padding: 11px 4px 0;
+      color: var(--soft);
+      font-family: var(--note);
+      font-size: 10px;
+      letter-spacing: .02em;
+    }
+
+    .page-footer .footer-mid {
+      font-family: var(--hand);
+      font-size: 12px;
+      letter-spacing: .06em;
+    }
+
+    .squiggle {
+      width: 122px;
+      height: 12px;
+      color: var(--orange);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .new-task:hover { transform: rotate(0deg) translate(-1px, -1px); }
+      .task-row:hover { background: rgba(220,239,114,.12); }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="TaskPilot 首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <path d="M18.3 2.5 7.7 17.1h7.4l-1.5 12.4L25 13.1h-7.2l.5-10.6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M9.2 21.7c-2.9 0-5.1 1.6-5.8 4.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand-word">TaskPilot</span>
+        <span class="brand-note">手边任务簿</span>
+      </a>
+
+      <nav class="main-nav" aria-label="主导航">
+        <a class="active" href="#">今天</a>
+        <a href="#">所有任务</a>
+        <a href="#">一点点回顾</a>
+      </nav>
+
+      <div class="top-actions">
+        <div class="date-block">
+          <strong>11.03</strong>
+          <em>周二 / 夜</em>
+        </div>
+        <button class="new-task" type="button"><span>＋</span>新建任务</button>
+      </div>
+    </header>
+
+    <svg class="rough-divider" viewBox="0 0 1350 12" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M2 7.5c81-1.6 154-2.2 230-1.4 95 .9 162 2.4 245 1.1 95-1.4 188-2.1 278-1.1 91 1 177 2.1 272 1.4 107-.8 188-2.1 321-3.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M14 9.5c120 1.2 186-.2 298-1.2" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" opacity=".5"/>
+    </svg>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow"><i aria-hidden="true"></i> TODAY, SLOWLY / 今天慢慢来</p>
+        <h1>把今天，<br><span class="marker">做轻一点。</span></h1>
+        <p class="hero-sub">三件小事，慢慢来。先挑一件开始。</p>
+      </div>
+
+      <div class="hero-side">
+        <div class="margin-note">
+          <strong>今天的边角料</strong>
+          做完一件，<br>就划掉一件。<br>不用很满，也很好。
+          <svg viewBox="0 0 50 38" fill="none" aria-hidden="true">
+            <path d="M4 4c16 0 27 6 31 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="m30 20 6 7 7-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="counts" aria-label="任务统计">
+          <div class="count"><strong>03</strong><span>件待办</span></div>
+          <div class="count"><strong>01</strong><span>件完成</span></div>
+          <div class="count"><strong>01</strong><span>件逾期</span></div>
+        </div>
+      </div>
+    </section>
+
+    <main class="layout">
+      <section class="task-sheet" aria-labelledby="today-list-title">
+        <div class="tape" aria-hidden="true"></div>
+        <div class="sheet-head">
+          <div class="sheet-title">
+            <span class="section-no">01 /</span>
+            <h2 id="today-list-title">今天的清单</h2>
+          </div>
+          <div class="toolbar">
+            <div class="tabs" aria-label="筛选任务">
+              <button class="active" type="button">全部 <span class="tab-count">04</span></button>
+              <button type="button">待办 <span class="tab-count">03</span></button>
+              <button type="button">完成 <span class="tab-count">01</span></button>
+            </div>
+            <button class="sort" type="button">按截止 ↑</button>
+          </div>
+        </div>
+
+        <ul class="task-list">
+          <li class="task-row">
+            <span class="task-check" role="img" aria-label="未完成"></span>
+            <div class="task-copy">
+              <div class="task-title-line">
+                <span class="task-title">完成实验报告</span>
+                <span class="pencil-tag">最急</span>
+              </div>
+              <p class="task-sub">把结果和图补完，发给周老师。</p>
+            </div>
+            <div class="task-when overdue"><strong>今天 15:00</strong>已经晚了一点</div>
+            <button class="task-more" type="button" aria-label="完成实验报告的更多操作">⋯</button>
+          </li>
+
+          <li class="task-row">
+            <span class="task-check" role="img" aria-label="未完成"></span>
+            <div class="task-copy">
+              <div class="task-title-line">
+                <span class="task-title">梳理项目周报</span>
+              </div>
+              <p class="task-sub">先把本周进度和卡点列出来。</p>
+            </div>
+            <div class="task-when"><strong>明天 18:00</strong>还有一整晚</div>
+            <button class="task-more" type="button" aria-label="梳理项目周报的更多操作">⋯</button>
+          </li>
+
+          <li class="task-row">
+            <span class="task-check" role="img" aria-label="未完成"></span>
+            <div class="task-copy">
+              <div class="task-title-line">
+                <span class="task-title">给牙医打个电话</span>
+              </div>
+              <p class="task-sub">问一下下周还有没有空位。</p>
+            </div>
+            <div class="task-when"><strong>没有截止</strong>有空再说</div>
+            <button class="task-more" type="button" aria-label="给牙医打电话的更多操作">⋯</button>
+          </li>
+
+          <li class="task-row is-done">
+            <span class="task-check checked" role="img" aria-label="已完成">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m4 13 5 5L20 5" stroke="currentColor" stroke-width="2.8" stroke-linecap="square" stroke-linejoin="miter"/>
+              </svg>
+            </span>
+            <div class="task-copy">
+              <div class="task-title-line">
+                <span class="task-title">买一盒乌龙茶</span>
+              </div>
+              <p class="task-sub">回家路上顺手带一盒。</p>
+            </div>
+            <div class="task-when"><strong>昨天</strong>已经做好啦</div>
+            <button class="task-more" type="button" aria-label="买一盒乌龙茶的更多操作">⋯</button>
+          </li>
+        </ul>
+
+        <div class="sheet-foot">
+          <p><strong>给自己的小纸条：</strong> 做完实验报告，就奖励自己一杯茶。</p>
+          <div class="tiny-marks" aria-label="今日小标记">
+            <span>✓</span><span>·</span><span>·</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="helper-note" aria-label="AI 助手小帮手">
+        <div class="tape tiny" aria-hidden="true"></div>
+        <div class="helper-head">
+          <svg class="helper-doodle" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+            <g stroke="currentColor" stroke-width="2.5" stroke-linecap="butt" stroke-linejoin="miter">
+              <path d="M37 31c-4-10 5-17 13-16 3-7 14-8 18-2 8-1 13 7 9 13 7 4 4 13-2 15-2 7-9 10-15 8-6 5-15 1-16-5-7-1-10-6-7-12"/>
+              <path d="M42 48c-2 10-3 17-3 25m25-25c3 8 5 16 5 25"/>
+              <path d="M34 62c-7 4-10 8-11 13m43-14c7 4 12 6 18 5"/>
+              <path d="M37 73c-3 9-6 15-11 21m33-21c4 7 9 13 15 18"/>
+              <path d="M72 57 88 43l11 12-16 14z"/>
+              <path d="m84 46 3 4m2-1 4 4m-14 3 9-8"/>
+              <path d="M30 26c-3-8-8-11-13-12m17 2-.5 7"/>
+            </g>
+            <path d="M25 19c-8-3-12-1-15 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <div class="helper-title">
+            <strong>小帮手</strong>
+            <span>刚刚帮你看过一遍清单</span>
+          </div>
+          <span class="online">在</span>
+        </div>
+
+        <div class="helper-chat">
+          <div class="bubble user">实验报告我已经交了。还有哪些没做？</div>
+          <div class="bubble helper">还有 <strong>3 件</strong>没完成：整理项目周报、给牙医打电话，还有实验报告你刚说交啦。</div>
+          <div class="bubble helper">要不要先把「完成实验报告」划掉？这样今天会轻一点。</div>
+
+          <div class="pending-card">
+            <div class="pending-label">等你点头 / PENDING</div>
+            <p>把「完成实验报告」标记为已完成</p>
+            <div class="pending-actions">
+              <button class="mini-btn primary" type="button">划掉它</button>
+              <button class="mini-btn" type="button">再等等</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="helper-input">
+          <input type="text" placeholder="和我说说今天…" aria-label="和 AI 助手说话" />
+          <button class="send-doodle" type="button" aria-label="发送消息">↗</button>
+        </div>
+        <p class="helper-foot">写操作要你点头才会发生</p>
+      </aside>
+    </main>
+
+    <footer class="page-footer">
+      <span>TaskPilot / personal task notebook</span>
+      <span class="footer-mid">把日子过成一张可以涂改的纸。</span>
+      <span>03 NOV 2026 <svg class="squiggle" viewBox="0 0 122 12" fill="none" aria-hidden="true"><path d="M2 8c21-4 39-5 61-3 24 2 38 2 57-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+    </footer>
+  </div>
+</body>
+</html>

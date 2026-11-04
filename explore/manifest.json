@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "project": "TaskPilot V1.0",
+  "brief": "用喜茶式手绘涂鸦语言重新设计单用户 AI 任务管理前端。保留任务清单、状态筛选、截止时间、逾期状态、AI 对话与写操作确认；不使用任何官方品牌标识，插画全部为原创线稿。",
+  "round": "第一轮 · 三个手绘方向",
+  "lang": "zh",
+  "nativeViewport": { "width": 1440, "height": 900 },
+  "candidates": [
+    {
+      "id": "a",
+      "name": "纸上小帮手 / Paper Day",
+      "concept": "把任务管理做成一页可以涂改的手边草稿纸：大字手写标题、便签胶带、黑色空心抖线，AI 是一个替你把清单搬来搬去的小小操作员。轻松、亲近，但信息层级仍然干净。",
+      "typography": "KaiTi 大字手写标题 + Microsoft YaHei 正文 + Segoe Script / Bradley Hand 小批注。标题重、正文轻，像一本写满边角注的生活手账。",
+      "traits": [
+        "纸张、胶带与印刷网格",
+        "空心黑色抖线小工人",
+        "彩色马克笔划线",
+        "清单 + 便签侧栏",
+        "所有写操作都要先点头"
+      ],
+      "palette": ["#F3EDDF", "#FBF7ED", "#181813", "#DCEF72", "#F26B3F"],
+      "kind": "html",
+      "source": "explore/a.html",
+      "nativeViewport": { "width": 1440, "height": 900 },
+      "interactive": false
+    },
+    {
+      "id": "b",
+      "name": "今日小摊 / Today's Stand",
+      "concept": "把今天的待办摆成一个有精神的桌面小摊：钴蓝侧栏、柑橘色任务牌、酸柠绿完成卡、粗黑边框与硬边阴影。像一张会被贴在墙上的任务海报，鼓励先做最难的一件。",
+      "typography": "Arial Black 标题与巨大数字 + Microsoft YaHei 粗体正文 + KaiTi 手写贴纸。字形块面大、节奏快，适合制造行动感。",
+      "traits": [
+        "海报式大数字与斜贴纸",
+        "彩色任务牌拼贴",
+        "粗黑边框、无模糊硬阴影",
+        "AI 作为独立蓝色小摊",
+        "高能量但保留清楚的主次"
+      ],
+      "palette": ["#F6F0E3", "#2946F5", "#FF6A3D", "#DCEF6E", "#FFC6D5"],
+      "kind": "html",
+      "source": "explore/b.html",
+      "nativeViewport": { "width": 1440, "height": 900 },
+      "interactive": false
+    },
+    {
+      "id": "c",
+      "name": "夜茶手账 / After Hours Ledger",
+      "concept": "把夜晚的任务收进一本暖色纸张的手账：墨绿底色、竖排宋体、朱砂印章、极细横线。AI 像一个安静坐在纸边的小线人，只在需要确认时轻轻敲一下。",
+      "typography": "Songti / SimSun 竖排大标题与正文 + KaiTi 边注 + 等宽感小号英文标记。语气安静，阅读速度放慢。",
+      "traits": [
+        "竖排手账标题",
+        "墨绿夜场与暖纸对照",
+        "朱砂印章式操作",
+        "时间轴清单",
+        "克制的留白与低饱和"
+      ],
+      "palette": ["#101411", "#F1E8D6", "#D79A4A", "#AD4632", "#657661"],
+      "kind": "html",
+      "source": "explore/c.html",
+      "nativeViewport": { "width": 1440, "height": 900 },
+      "interactive": false
+    }
+  ]
+}
